@@ -38,6 +38,17 @@ function dyniva_content_moderation_entity_presave(EntityInterface $entity) {
 }
 
 /**
+ * Implements hook_module_implements_alter().
+ */
+function dyniva_content_moderation_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'entity_presave' && array_key_exists('dyniva_content_moderation', $implementations)) {
+    $group = $implementations['dyniva_content_moderation'];
+    unset($implementations['dyniva_content_moderation']);
+    $implementations['dyniva_content_moderation'] = $group;
+  }
+}
+
+/**
  * Implements hook_ENTITY_TYPE_storage_load().
  */
 function dyniva_content_moderation_node_storage_load(array $entities) {
