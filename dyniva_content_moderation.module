@@ -9,6 +9,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\dyniva_content_moderation\Form\NodeModerateForm;
 use Drupal\Component\Utility\SafeMarkup;
+use Drupal\dyniva_content_moderation\DynivaEntityOperations;
 
 /**
  * @file
@@ -25,6 +26,15 @@ function dyniva_content_moderation_node_presave(EntityInterface $entity) {
       $entity->published_time->value = $dateFormatter->format(time()-date('Z'), 'custom', 'Y-m-d\TH:i:s');
     }
   }
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function dyniva_content_moderation_entity_presave(EntityInterface $entity) {
+  return \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(DynivaEntityOperations::class)
+    ->entityPresave($entity);
 }
 
 /**
@@ -164,7 +174,7 @@ function theme_node_moderate_email($variables){
    * @var WorkflowInterface $workflow
    */
   $workflow = \Drupal::service('content_moderation.moderation_information')->getWorkflowForEntity($node);
-  
+
   $renderer = \Drupal::service('renderer');
   $output = [];
 
