@@ -329,3 +329,24 @@ function _dyniva_content_moderation_clean_field_config(){
     field_purge_field($field);
   }
 }
+
+if(!function_exists('workspace_ccms_entity_revisionIds')){
+  /**
+   * {@inheritdoc}
+   */
+  function workspace_ccms_entity_revisionIds(EntityInterface $entity) {
+    $entity_type = $entity->getEntityType();
+    $id_key = $entity_type->getKey('id');
+    $revision_key = $entity_type->getKey('revision');
+    $revision_table = $entity_type->getRevisionTable();
+    $result = [];
+    if ($revision_key && $revision_table) {
+      $query = db_select($revision_table, 't')
+        ->condition($id_key, $entity->id())
+        ->orderBy($revision_key);
+      $query->addField('t', $revision_key);
+      $result = $query->execute()->fetchCol();
+    }
+    return $result;
+  }
+}
